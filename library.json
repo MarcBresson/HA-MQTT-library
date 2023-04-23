@@ -1,0 +1,22 @@
+{
+    "name": "HA-MQTT",
+    "version": "0.1.0",
+    "description": "handler for MQTT auto discovery in HA.",
+    "keywords": "mqtt, homeassistant, HA",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/MarcBresson/HA-MQTT"
+    },
+    "authors":
+    [
+      {
+        "name": "Marc Bresson",
+        "url": "https://github.com/MarcBresson"
+      }
+    ],
+    "license": "EUPL-1.2",
+    "homepage": "https://github.com/MarcBresson/HA-MQTT",
+    "frameworks": "arduino",
+    "platforms": "*"
+}
