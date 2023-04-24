@@ -9,7 +9,7 @@ class HA_MQTT_device {
     public:
         boolean connect();
         void wait_for_connection(uint32_t retry_delay = 3000);
-        void set_info(String device_name, String device_id, String component, String software_id, String model_id, String manufacturer_id);
+        void set_info(String device_name, String component, String software_id, String model_id, String manufacturer_id);
         void set_client(PubSubClient& client, String mqtt_username, String mqtt_password);
         void set_wifi();
         void send_discovery(char* conf_buffer, const char* discovery_topic);
@@ -19,7 +19,7 @@ class HA_MQTT_device {
         String _mqtt_password;
 
         String _name;
-        String _id;
+        String _identifier;
         String _software_id;
         String _model_id;
         String _manufacturer_id;

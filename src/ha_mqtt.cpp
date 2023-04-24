@@ -1,24 +1,27 @@
 #include "ha_mqtt.h"
 #include <ESP8266WiFi.h>
 
-#define DISCOVERY_PREFIX "homeassistant/";
+#define TOPIC_PREFIX "homeassistant/";
 #define COMMAND_SUFFIX "/set";
 #define STATE_SUFFIX "/state";
 #define AVAILABILITY_SUFFIX "/status";
-#define DISCOVERY_SUFFIX "/config";
+#define CONFIG_SUFFIX "/config";
 
-void HA_MQTT_device::set_info(String device_name, String device_id, String component, String software_id, String model_id, String manufacturer_id){
+void HA_MQTT_device::set_info(String device_name, String component, String software_id, String model_id, String manufacturer_id){
     set_wifi();
 
     _name = device_name;
-    _id = device_id + _mac_adress.substring(12);
+    _identifier = _name + _mac_adress.substring(12);
+    _identifier.replace(' ', '_');
+    _identifier.toLowerCase();
+
     _software_id = software_id;
     _model_id = model_id;
     _manufacturer_id = manufacturer_id;
 
     // must conform to https://www.home-assistant.io/integrations/mqtt/#discovery-topic
-    const String discovery_prefix = DISCOVERY_PREFIX;
-    _topic = discovery_prefix + component + "/" + _id;
+    const String topic_prefix = TOPIC_PREFIX;
+    _topic = topic_prefix + component + "/" + _identifier;
 }
 
 void HA_MQTT_device::set_client(PubSubClient& client, String mqtt_username, String mqtt_password){
@@ -35,7 +38,7 @@ void HA_MQTT_device::set_wifi(){
 
 boolean HA_MQTT_device::connect(){
     return _client->connect(
-            _id.c_str(),
+            _identifier.c_str(),
             _mqtt_username.c_str(),
             _mqtt_password.c_str()
         );
@@ -127,8 +130,8 @@ String HA_MQTT_entity::getAvailabilityTopic(){
     return (getBaseTopic() + availability_suffix);
 }
 String HA_MQTT_entity::getDiscoveryTopic(){
-    String discovery_suffix = DISCOVERY_SUFFIX;
-    return (getBaseTopic() + discovery_suffix);
+    String CONFIG_SUFFIX = CONFIG_SUFFIX;
+    return (getBaseTopic() + CONFIG_SUFFIX);
 }
 String HA_MQTT_entity::getCommandTopic(){
     String command_suffix = COMMAND_SUFFIX;
