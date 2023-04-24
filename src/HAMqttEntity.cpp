@@ -1,10 +1,10 @@
 #include "ha_mqtt.h"
 
-HA_MQTT_entity::HA_MQTT_entity(HAMqttDevice& device){
+HAMqttEntity::HAMqttEntity(HAMqttDevice& device){
     _device = &device;
 }
 
-void HA_MQTT_entity::auto_discovery(String entity_name, String entity_id){
+void HAMqttEntity::auto_discovery(String entity_name, String entity_id){
     const String availability_suffix = AVAILABILITY_SUFFIX;
     const String state_suffix = STATE_SUFFIX;
     const String command_suffix = COMMAND_SUFFIX;
@@ -34,7 +34,7 @@ void HA_MQTT_entity::auto_discovery(String entity_name, String entity_id){
     send_discovery();
 }
 
-void HA_MQTT_entity::send_discovery(){
+void HAMqttEntity::send_discovery(){
     char buffer[600];
     serializeJsonPretty(_conf, buffer);
 
@@ -49,27 +49,27 @@ void HA_MQTT_entity::send_discovery(){
     }   
 }
 
-void HA_MQTT_entity::send_available(){
+void HAMqttEntity::send_available(){
     String availability_suffix = AVAILABILITY_SUFFIX;
     _device->_client->publish(getAvailabilityTopic().c_str(), "online", false);
 }
 
-String HA_MQTT_entity::getBaseTopic(){
+String HAMqttEntity::getBaseTopic(){
     return _device->_topic + _id;
 }
-String HA_MQTT_entity::getAvailabilityTopic(){
+String HAMqttEntity::getAvailabilityTopic(){
     String availability_suffix = AVAILABILITY_SUFFIX;
     return (getBaseTopic() + availability_suffix);
 }
-String HA_MQTT_entity::getDiscoveryTopic(){
+String HAMqttEntity::getDiscoveryTopic(){
     String CONFIG_SUFFIX = CONFIG_SUFFIX;
     return (getBaseTopic() + CONFIG_SUFFIX);
 }
-String HA_MQTT_entity::getCommandTopic(){
+String HAMqttEntity::getCommandTopic(){
     String command_suffix = COMMAND_SUFFIX;
     return (getBaseTopic() + command_suffix);
 }
-String HA_MQTT_entity::getStateTopic(){
+String HAMqttEntity::getStateTopic(){
     String state_suffix = STATE_SUFFIX;
     return (getBaseTopic() + state_suffix);
 }

@@ -15,7 +15,7 @@ class HAMqttDevice {
     public:
         boolean connect();
         void wait_for_connection(uint32_t retry_delay = 3000);
-        void set_info(String device_name, String component, String software_id, String model_id, String manufacturer_id);
+        void set_info(String device_name, String software_id, String model_id, String manufacturer_id);
         void set_client(PubSubClient& client, String mqtt_username, String mqtt_password);
         void set_wifi();
         void send_discovery(char* conf_buffer, const char* discovery_topic);
@@ -34,27 +34,11 @@ class HAMqttDevice {
 
         String _mac_adress;
         String _ip_adress;
-    
-    enum DeviceType{
-        ALARM_CONTROL_PANEL,
-        BINARY_SENSOR,
-        CAMERA,
-        COVER,
-        FAN,
-        LIGHT,
-        LOCK,
-        SENSOR,
-        SWITCH,
-        CLIMATE,
-        VACUUM,
-        NUMBER,
-        BUTTON
-    };
 };
 
-class HA_MQTT_entity {
+class HAMqttEntity {
     public:
-        explicit HA_MQTT_entity(HAMqttDevice& device);
+        explicit HAMqttEntity(HAMqttDevice& device, Component component);
         void send_available();
         void auto_discovery(String entity_name, String entity_id);
         String getBaseTopic();
@@ -71,5 +55,21 @@ class HA_MQTT_entity {
         StaticJsonDocument<512> _conf;
 
         void send_discovery();
+
+    enum Component{
+        ALARM_CONTROL_PANEL,
+        BINARY_SENSOR,
+        CAMERA,
+        COVER,
+        FAN,
+        LIGHT,
+        LOCK,
+        SENSOR,
+        SWITCH,
+        CLIMATE,
+        VACUUM,
+        NUMBER,
+        BUTTON
+    };
 };
 #endif
