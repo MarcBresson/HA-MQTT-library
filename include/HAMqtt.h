@@ -1,11 +1,17 @@
 #ifndef class_HA_MQTT_device
 #define class_HA_MQTT_device
 
+#define TOPIC_PREFIX "homeassistant/";
+#define COMMAND_SUFFIX "/set";
+#define STATE_SUFFIX "/state";
+#define AVAILABILITY_SUFFIX "/status";
+#define CONFIG_SUFFIX "/config";
+
 #include <PubSubClient.h>
 #include <ArduinoJson.h>
 #include <stdlib.h>
 
-class HA_MQTT_device {
+class HAMqttDevice {
     public:
         boolean connect();
         void wait_for_connection(uint32_t retry_delay = 3000);
@@ -28,11 +34,27 @@ class HA_MQTT_device {
 
         String _mac_adress;
         String _ip_adress;
+    
+    enum DeviceType{
+        ALARM_CONTROL_PANEL,
+        BINARY_SENSOR,
+        CAMERA,
+        COVER,
+        FAN,
+        LIGHT,
+        LOCK,
+        SENSOR,
+        SWITCH,
+        CLIMATE,
+        VACUUM,
+        NUMBER,
+        BUTTON
+    };
 };
 
 class HA_MQTT_entity {
     public:
-        explicit HA_MQTT_entity(HA_MQTT_device& device);
+        explicit HA_MQTT_entity(HAMqttDevice& device);
         void send_available();
         void auto_discovery(String entity_name, String entity_id);
         String getBaseTopic();
@@ -41,7 +63,7 @@ class HA_MQTT_entity {
         String getCommandTopic();
         String getStateTopic();
 
-        HA_MQTT_device* _device;
+        HAMqttDevice* _device;
 
         String _name;
         String _id;
