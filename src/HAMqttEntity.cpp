@@ -1,75 +1,105 @@
-#include "ha_mqtt.h"
+#include <HAMqtt.h>
 
-HAMqttEntity::HAMqttEntity(HAMqttDevice& device){
+HAMqttEntity::HAMqttEntity(EspMQTTClient& client, HAMqttDevice& device, String name, Component component){
+    _client = &client;
     _device = &device;
+    _name = name;
+    _component = component;
+
+    _identifier = _device->getIdentifier() + "-" + name;
+    _identifier.replace(' ', '_');
+    _identifier.toLowerCase();
 }
 
-void HAMqttEntity::auto_discovery(String entity_name, String entity_id){
-    const String availability_suffix = AVAILABILITY_SUFFIX;
-    const String state_suffix = STATE_SUFFIX;
-    const String command_suffix = COMMAND_SUFFIX;
-
-    _name = entity_name;
-    _id = entity_id;
-
-    _conf["name"] = entity_name;
-    _conf["unique_id"] = _device->_manufacturer_id + "-" + _device->_mac_adress + "-" + _id;
-
-    _conf["~"] = getBaseTopic();
-
-    _conf["availability_topic"] = "~" + availability_suffix;
-
-    _conf["stat_t"] = "~" + state_suffix;
-    _conf["cmd_t"] = "~" + command_suffix;
-    
-    JsonObject device = _conf.createNestedObject("device");
-    device["name"] = _device->_name;
-    device["sw_version"] = _device->_software_id;
-    device["model"] = _device->_model_id;
-    device["manufacturer"] = _device->_manufacturer_id;
-
-    JsonArray identifiers = device.createNestedArray("identifiers");
-    identifiers.add(_device->_mac_adress);
-
-    send_discovery();
+String HAMqttEntity::getName(){
+    return _name;
+}
+String HAMqttEntity::getIdentifier(){
+    return _identifier;
 }
 
-void HAMqttEntity::send_discovery(){
-    char buffer[600];
-    serializeJsonPretty(_conf, buffer);
-
-    Serial.println(buffer);
-
-    if (_device->_client->publish(getDiscoveryTopic().c_str(), buffer, true)){
-        Serial.println("... configuration sent");
-    } else {
-        Serial.println("... failed to send configuration ...");
-        delay(4000);
-        send_discovery();
-    }   
+void HAMqttEntity::addCommandTopic(){
+    addConfig("cmd_t", _getTopic(true, "/set"));
 }
-
-void HAMqttEntity::send_available(){
-    String availability_suffix = AVAILABILITY_SUFFIX;
-    _device->_client->publish(getAvailabilityTopic().c_str(), "online", false);
+void HAMqttEntity::addStateTopic(){
+    addConfig("stat_t", _getTopic(true, "/state"));
 }
 
 String HAMqttEntity::getBaseTopic(){
-    return _device->_topic + _id;
+    const String ha_topic = HA_TOPIC;
+    return ha_topic + componentToStr(_component) + "/" + _device->getIdentifier();
 }
-String HAMqttEntity::getAvailabilityTopic(){
-    String availability_suffix = AVAILABILITY_SUFFIX;
-    return (getBaseTopic() + availability_suffix);
+String HAMqttEntity::getAvailabilityTopic(bool relative){
+    return _getTopic(relative, + "/status");
 }
-String HAMqttEntity::getDiscoveryTopic(){
-    String CONFIG_SUFFIX = CONFIG_SUFFIX;
-    return (getBaseTopic() + CONFIG_SUFFIX);
+String HAMqttEntity::getDiscoveryTopic(bool relative){
+    // must conform to https://www.home-assistant.io/integrations/mqtt/#discovery-topic
+    return _getTopic(relative, "/config");
 }
-String HAMqttEntity::getCommandTopic(){
-    String command_suffix = COMMAND_SUFFIX;
-    return (getBaseTopic() + command_suffix);
+String HAMqttEntity::getCommandTopic(bool relative){
+    return _getTopic(relative, "/set");
 }
-String HAMqttEntity::getStateTopic(){
-    String state_suffix = STATE_SUFFIX;
-    return (getBaseTopic() + state_suffix);
+String HAMqttEntity::getStateTopic(bool relative){
+    return _getTopic(relative, "/state");
+}
+String HAMqttEntity::_getTopic(bool relative, String suffix){
+    if(relative){
+        return "~" + suffix;
+    }
+    return getBaseTopic() + suffix;
+}
+
+void HAMqttEntity::addConfig(const String &key, const String &value){
+    _config.push_back({key, value});
+}
+
+String HAMqttEntity::getConfigPayload(){
+    String s = "{";
+    s += serializerKeyValue("name", _name);
+    s += ",";
+    s += serializerKeyValue("unique_id", getIdentifier());
+    s += ",";
+    s += serializerKeyValue("~", getBaseTopic());
+    s += ",";
+    s += serializerKeyValue("device", _device->getConfigPayload());
+    s += ",";
+    s += serializerDict(_config, false);
+    s += ",";
+
+    std::vector<String> availability;
+    availability.push_back("{\"topic\":\"" + _device->getAvailabilityTopic() + "\"}");
+    availability.push_back("{\"topic\":\"" + getAvailabilityTopic() + "\"}");
+    s += serializerKeyValue("availability", serializerList(availability, true));
+
+    s += "}";
+
+    return s;
+}
+
+void HAMqttEntity::sendAvailable(){
+    _client->publish(getAvailabilityTopic(), "online");
+}
+
+String HAMqttEntity::componentToStr(Component component){
+    // from https://www.home-assistant.io/integrations/#search/mqtt
+    // update the list as it goes
+    switch (component){
+    case Component::ALARM_CONTROL_PANEL: return "alarm_control_panel";
+    case Component::BINARY_SENSOR: return "binary_sensor";
+    case Component::BUTTON: return "button";
+    case Component::CAMERA: return "camera";
+    case Component::COVER: return "cover";
+    case Component::DEVICE_TRACKER: return "device_tracker";
+    case Component::DEVICE_TRIGGER: return "device_trigger";
+    case Component::FAN: return "fan";
+    case Component::HUMIDIFIER: return "humidifier";
+    case Component::HVAC: return "hvac";
+    case Component::LIGHT: return "light";
+    case Component::LOCK: return "lock";
+    case Component::SIREN: return "siren";
+    case Component::SENSOR: return "sensor";
+    case Component::SWITCH: return "switch";
+    case Component::VACUUM: return "vacuum";
+    default: return "default";
+    }
 }
