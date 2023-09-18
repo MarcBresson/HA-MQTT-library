@@ -37,15 +37,16 @@ class HAMqttDevice {
          *
          * @param device_name The name of your device. It should not contains
          * accentuated letters.
-         * @param client The client object.
+         * @param client The MQTT client object.
         */
         HAMqttDevice(String device_name, EspMQTTClient& client);
 
         /**
          * @brief Add a custom config key value pair that will be used when
-         * sending the config payload to MQTT. See available config for mqtt
-         * sensors here:
-         * https://www.home-assistant.io/integrations/sensor.mqtt/#device
+         * sending the config payload to MQTT. See available device config
+         * here: https://www.home-assistant.io/integrations/sensor.mqtt/#device
+         * Device configs are common whatever entity type (sensor, switch,
+         * button, fan etc.) you are setting up.
          *
          * @param key name of the config option.
          * @param value value of the config option.
