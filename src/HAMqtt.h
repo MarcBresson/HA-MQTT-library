@@ -23,17 +23,71 @@ String serializerKeyValue(String key, String value);
 
 class HAMqttDevice {
     public:
+        /**
+         * @brief Construct the device object. Managing or sending
+         * availability will not be available with Client provided.
+         *
+         * @param device_name The name of your device. It should not contains
+         * accentuated letters.
+        */
         HAMqttDevice(String device_name);
+        /**
+         * @brief Construct the device with the Client object. It allows
+         * the use of manageAvailability and sendAvailable methods.
+         *
+         * @param device_name The name of your device. It should not contains
+         * accentuated letters.
+         * @param client The client object.
+        */
         HAMqttDevice(String device_name, EspMQTTClient& client);
 
+        /**
+         * @brief Add a custom config key value pair that will be used when
+         * sending the config payload to MQTT. See available config for mqtt
+         * sensors here:
+         * https://www.home-assistant.io/integrations/sensor.mqtt/#device
+         *
+         * @param key name of the config option.
+         * @param value value of the config option.
+        */
         void addConfig(const String &key, const String &value);
+        /**
+         * @brief Parse the config options into a string.
+         *
+         * @return serialised JSON config.
+        */
         String getConfigPayload();
 
+        /**
+         * @brief get device name.
+        */
         String getName();
+        /**
+         * @brief get device identifier. It is constructed as follow:
+         * [device_name]-[last MAC adress characters]
+        */
         String getIdentifier();
+        /**
+         * @brief get device availability topic. It is constructed as
+         * follow: homeassistant/[device identifier]/status.
+         * 
+         * You can change the "homeassistant/" discovery topic by
+         * defining HA_TOPIC and chaning the value is HA.
+         * https://www.home-assistant.io/integrations/mqtt/#discovery-topic
+         * 
+        */
         String getAvailabilityTopic();
 
+        /**
+         * @brief will send an available payload every n seconds.
+         * 
+         * @param keepAliveSecond number of seconds to wait before sending
+         * a new available message.
+        */
         void manageAvailability(uint16_t keepAliveSecond);
+        /**
+         * @brief send an available payload.
+        */
         void sendAvailable();
 
         EspMQTTClient* getClient();
