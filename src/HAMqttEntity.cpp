@@ -1,7 +1,6 @@
 #include <HAMqtt.h>
 
-HAMqttEntity::HAMqttEntity(EspMQTTClient& client, HAMqttDevice& device, String name, Component component){
-    _client = &client;
+HAMqttEntity::HAMqttEntity(HAMqttDevice& device, String name, Component component){
     _device = &device;
     _name = name;
     _component = component;
@@ -77,7 +76,7 @@ String HAMqttEntity::getConfigPayload(){
 }
 
 void HAMqttEntity::sendAvailable(){
-    _client->publish(getAvailabilityTopic(), "online");
+    _device->getClient()->publish(getAvailabilityTopic(), "online");
 }
 
 String HAMqttEntity::componentToStr(Component component){

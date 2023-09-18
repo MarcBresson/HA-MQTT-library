@@ -23,6 +23,7 @@ String serializerKeyValue(String key, String value);
 
 class HAMqttDevice {
     public:
+        HAMqttDevice(String device_name);
         HAMqttDevice(String device_name, EspMQTTClient& client);
 
         void addConfig(const String &key, const String &value);
@@ -34,6 +35,8 @@ class HAMqttDevice {
 
         void manageAvailability(uint16_t keepAliveSecond);
         void sendAvailable();
+
+        EspMQTTClient* getClient();
 
     private:
         EspMQTTClient* _client;
@@ -50,7 +53,7 @@ class HAMqttEntity {
     public:
         enum Component{ALARM_CONTROL_PANEL, BINARY_SENSOR, BUTTON, CAMERA, COVER, DEVICE_TRACKER, DEVICE_TRIGGER, FAN, HUMIDIFIER, HVAC, LIGHT, LOCK, SIREN, SENSOR, SWITCH, VACUUM};
 
-        HAMqttEntity(EspMQTTClient& client, HAMqttDevice& device, String name, Component component);
+        HAMqttEntity(HAMqttDevice& device, String name, Component component);
         String getName();
         String getIdentifier();
 

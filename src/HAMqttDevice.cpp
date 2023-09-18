@@ -1,15 +1,17 @@
 #include <HAMqtt.h>
 
-HAMqttDevice::HAMqttDevice(String name, EspMQTTClient& client){
+HAMqttDevice::HAMqttDevice(String name){
     _name = name;
 
     _mac_adress = WiFi.macAddress();
     _mac_adress.replace(":", "-");
 
-    _identifier = _name + _mac_adress.substring(12);
+    _identifier = name + _mac_adress.substring(12);
     _identifier.replace(' ', '_');
     _identifier.toLowerCase();
+}
 
+HAMqttDevice::HAMqttDevice(String name, EspMQTTClient& client) : HAMqttDevice(name){
     _client = &client;
 }
 
@@ -61,4 +63,8 @@ void HAMqttDevice::manageAvailability(uint16_t keepAliveSecond){
 
 void HAMqttDevice::sendAvailable(){
     _client->publish(getAvailabilityTopic(), "online");
+}
+
+EspMQTTClient* HAMqttDevice::getClient(){
+    return _client;
 }
