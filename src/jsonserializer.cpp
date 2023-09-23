@@ -14,7 +14,7 @@ String serializerList(std::vector<String> array, bool enclose){
         s = "";
     }
 
-    for(int i = 0; i < array.size(); i++){
+    for(uint16_t i = 0; i < array.size(); i++){
         if(array[i][0] == '{' || array[i][0] == '(' || array[i][0] == '[' || array[i] == "false" || array[i] == "true"){
             s += array[i];
         } else {
@@ -41,7 +41,7 @@ String serializerDict(std::vector<Dict> dictionnary, bool enclose){
         s = "";
     }
 
-    for(int i = 0; i < dictionnary.size(); i++){
+    for(uint16_t i = 0; i < dictionnary.size(); i++){
         s += serializerKeyValue(dictionnary[i].key, dictionnary[i].value);
         s += ",";
     }
