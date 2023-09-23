@@ -18,5 +18,8 @@
     "license": "EUPL-1.2",
     "homepage": "https://github.com/MarcBresson/HA-MQTT",
     "frameworks": "arduino",
-    "platforms": "*"
+    "platforms": "*",
+    "dependancies": {
+      "plapointe6/EspMQTTClient": "^1.13.3"
+    }
 }

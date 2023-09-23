@@ -10,7 +10,6 @@
 #endif
 
 #include "EspMQTTClient.h"
-#include <ArduinoJson.h>
 #include <vector>
 
 struct Dict{
