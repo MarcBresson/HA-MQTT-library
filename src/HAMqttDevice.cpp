@@ -12,6 +12,10 @@ HAMqttDevice::HAMqttDevice(String name){
 }
 
 HAMqttDevice::HAMqttDevice(String name, EspMQTTClient& client) : HAMqttDevice(name){
+    setClient(client);
+}
+
+void HAMqttDevice::setClient(EspMQTTClient& client){
     _client = &client;
 }
 

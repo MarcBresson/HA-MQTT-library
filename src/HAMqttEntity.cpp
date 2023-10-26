@@ -1,11 +1,29 @@
 #include <HAMqtt.h>
 
-HAMqttEntity::HAMqttEntity(HAMqttDevice& device, String name, Component component){
-    _device = &device;
-    _name = name;
-    _component = component;
+HAMqttEntity::HAMqttEntity(){}
 
-    _identifier = _device->getIdentifier() + "-" + name;
+HAMqttEntity::HAMqttEntity(HAMqttDevice& device, String name, Component component){
+    setDevice(device);
+    setName(name);
+    setComponent(component);
+
+    init();
+}
+
+void HAMqttEntity::setDevice(HAMqttDevice& device){
+    _device = &device;
+}
+
+void HAMqttEntity::setName(String name){
+    _name = name;
+}
+
+void HAMqttEntity::setComponent(Component component){
+    _component = component;
+}
+
+void HAMqttEntity::init(){
+    _identifier = _device->getIdentifier() + "-" + _name;
     _identifier.replace(' ', '_');
     _identifier.toLowerCase();
 }
@@ -18,30 +36,30 @@ String HAMqttEntity::getIdentifier(){
 }
 
 void HAMqttEntity::addCommandTopic(){
-    addConfig("cmd_t", _getTopic(true, "/set"));
+    addConfig("cmd_t", getTopic(true, "/set"));
 }
 void HAMqttEntity::addStateTopic(){
-    addConfig("stat_t", _getTopic(true, "/state"));
+    addConfig("stat_t", getTopic(true, "/state"));
 }
 
 String HAMqttEntity::getBaseTopic(){
     const String ha_topic = HA_TOPIC;
-    return ha_topic + componentToStr(_component) + "/" + _device->getIdentifier();
+    return ha_topic + componentToStr(_component) + "/" + _identifier;
 }
 String HAMqttEntity::getAvailabilityTopic(bool relative){
-    return _getTopic(relative, + "/status");
+    return getTopic(relative, + "/status");
 }
 String HAMqttEntity::getDiscoveryTopic(bool relative){
     // must conform to https://www.home-assistant.io/integrations/mqtt/#discovery-topic
-    return _getTopic(relative, "/config");
+    return getTopic(relative, "/config");
 }
 String HAMqttEntity::getCommandTopic(bool relative){
-    return _getTopic(relative, "/set");
+    return getTopic(relative, "/set");
 }
 String HAMqttEntity::getStateTopic(bool relative){
-    return _getTopic(relative, "/state");
+    return getTopic(relative, "/state");
 }
-String HAMqttEntity::_getTopic(bool relative, String suffix){
+String HAMqttEntity::getTopic(bool relative, String suffix){
     if(relative){
         return "~" + suffix;
     }
@@ -77,6 +95,14 @@ String HAMqttEntity::getConfigPayload(){
 
 void HAMqttEntity::sendAvailable(){
     _device->getClient()->publish(getAvailabilityTopic(), "online");
+}
+
+EspMQTTClient* HAMqttEntity::getClient(){
+    return _device->getClient();
+}
+
+HAMqttDevice* HAMqttEntity::getDevice(){
+    return _device;
 }
 
 String HAMqttEntity::componentToStr(Component component){

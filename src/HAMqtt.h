@@ -41,6 +41,13 @@ class HAMqttDevice {
         HAMqttDevice(String device_name, EspMQTTClient& client);
 
         /**
+         * @brief Set the client object for the device.
+         * 
+         * @param client The MQTT client object.
+        */
+        void setClient(EspMQTTClient& client);
+
+        /**
          * @brief Add a custom config key value pair that will be used when
          * sending the config payload to MQTT. See available device config
          * here: https://www.home-assistant.io/integrations/sensor.mqtt/#device
@@ -122,7 +129,45 @@ class HAMqttEntity {
          * If you don't see yours in this list, create an issue
          * on my github https://github.com/MarcBresson/HA-MQTT.
         */
+        HAMqttEntity();
         HAMqttEntity(HAMqttDevice& device, String name, Component component);
+
+        /**
+         * @brief Set device. To be used with the empty constructor.
+         *
+         * @param device The device object.
+        */
+        void setDevice(HAMqttDevice& device);
+        
+        /**
+         * @brief Set entity's name. To be used with the empty constructor.
+         *
+         * @param name The entity name.
+        */
+        void setName(String name);
+
+        /**
+         * @brief Set the entity's component type. To be used with the empty constructor.
+         *
+         * @param component What component this entity is, e.g.
+         * HAMqttEntity::SENSOR. Available components are:
+         * ALARM_CONTROL_PANEL, BINARY_SENSOR, BUTTON, CAMERA,
+         * COVER, DEVICE_TRACKER, DEVICE_TRIGGER, FAN, HUMIDIFIER,
+         * HVAC, LIGHT, LOCK, SIREN, SENSOR, SWITCH, VACUUM.
+         * If you don't see yours in this list, create an issue
+         * on my github https://github.com/MarcBresson/HA-MQTT.
+        */
+        void setComponent(Component component);
+
+        /**
+         * @brief Initialize the entity by computing its identifier.
+         * Must be called once entity's device and name are set.
+         * To be used with the empty constructor.
+        */
+        void init();
+
+        HAMqttDevice* getDevice();
+
         /**
          * @brief get entity name.
         */
@@ -187,6 +232,8 @@ class HAMqttEntity {
         */
         void addStateTopic();
 
+        String getTopic(bool relative, String suffix);
+
         /**
          * @brief Add a custom config key value pair that will be used when
          * sending the config payload to MQTT. See available config for mqtt
@@ -210,8 +257,12 @@ class HAMqttEntity {
         */
         void sendAvailable();
 
+        /**
+         * @brief return the device's client.
+        */
+        EspMQTTClient* getClient();
+
     private:
-        EspMQTTClient* _client;
         HAMqttDevice* _device;
 
         String _name;
@@ -219,7 +270,6 @@ class HAMqttEntity {
 
         std::vector<Dict> _config;
 
-        String _getTopic(bool relative, String suffix);
 
         Component _component;
         static String componentToStr(Component component);

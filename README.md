@@ -101,8 +101,9 @@ String getConfigPayload();
 String getName();
 String getIdentifier();
 String getAvailabilityTopic();
-void sendAvailable();
 EspMQTTClient* getClient();
+void sendAvailable();
+void setClient(EspMQTTClient& client);
 ```
 
 ## Entity
@@ -110,10 +111,11 @@ EspMQTTClient* getClient();
 ### Constructor
 
 ```cpp
+HAMqttEntity();
 HAMqttEntity(HAMqttDevice& device, String name, Component component);
 ```
 
-Construct the entity object. Sending availability will only be available if the device's Client is provided.
+Construct the entity object. Any interaction with topics or mqtt client requires device's Client to be provided.
 
 #### Parameters
 
@@ -207,6 +209,11 @@ String getDiscoveryTopic(bool relative = false);
 String getCommandTopic(bool relative = false);
 String getConfigPayload();
 void sendAvailable();
+void setDevice(HAMqttDevice& device);
+void setName(String name);
+void setComponent(Component component);
+void init();
+EspMQTTClient* getClient();
 ```
 
 ## Examples
