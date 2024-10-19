@@ -1,6 +1,6 @@
 {
     "name": "HA MQTT discovery",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "handler for MQTT auto discovery in Home Assistant (HA).",
     "keywords": "mqtt, homeassistant, HA, discovery",
     "repository":
