@@ -106,25 +106,37 @@ HAMqttDevice* HAMqttEntity::getDevice(){
 }
 
 String HAMqttEntity::componentToStr(Component component){
-    // from https://www.home-assistant.io/integrations/#search/mqtt
+    // from https://www.home-assistant.io/integrations/mqtt/
     // update the list as it goes
     switch (component){
-    case Component::ALARM_CONTROL_PANEL: return "alarm_control_panel";
-    case Component::BINARY_SENSOR: return "binary_sensor";
-    case Component::BUTTON: return "button";
-    case Component::CAMERA: return "camera";
-    case Component::COVER: return "cover";
-    case Component::DEVICE_TRACKER: return "device_tracker";
-    case Component::DEVICE_TRIGGER: return "device_trigger";
-    case Component::FAN: return "fan";
-    case Component::HUMIDIFIER: return "humidifier";
-    case Component::HVAC: return "hvac";
-    case Component::LIGHT: return "light";
-    case Component::LOCK: return "lock";
-    case Component::SIREN: return "siren";
-    case Component::SENSOR: return "sensor";
-    case Component::SWITCH: return "switch";
-    case Component::VACUUM: return "vacuum";
-    default: return "default";
+        case Component::ALARM_CONTROL_PANEL: return "alarm_control_panel";
+        case Component::BINARY_SENSOR: return "binary_sensor";
+        case Component::BUTTON: return "button";
+        case Component::CAMERA: return "camera";
+        case Component::COVER: return "cover";
+        case Component::DEVICE_TRACKER: return "device_tracker";
+        case Component::DEVICE_TRIGGER: return "device_trigger";
+        case Component::EVENT: return "event";
+        case Component::FAN: return "fan";
+        case Component::HUMIDIFIER: return "humidifier";
+        case Component::IMAGE: return "image";
+        case Component::HVAC: return "hvac";
+        case Component::LAWN_MOWER: return "lawn_mower";
+        case Component::LIGHT: return "light";
+        case Component::LOCK: return "lock";
+        case Component::NOTIFY: return "notify";
+        case Component::NUMBER: return "number";
+        case Component::SCENE: return "scene";
+        case Component::SELECT: return "select";
+        case Component::SENSOR: return "lock";
+        case Component::SIREN: return "siren";
+        case Component::SWITCH: return "switch";
+        case Component::UPDATE: return "update";
+        case Component::TAG_SCANER: return "tag_scaner";
+        case Component::TEXT: return "text";
+        case Component::VACUUM: return "vacuum";
+        case Component::VALVE: return "valve";
+        case Component::WATER_HEATER: return "water_heater";
+        default: return "default";
     }
 }
